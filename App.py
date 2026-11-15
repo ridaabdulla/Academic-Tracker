@@ -2,9 +2,22 @@ import streamlit as st
 
 st.set_page_config(page_title="Smart Academic Tracker", layout="centered")
 
-# Custom Styling: Soft Lavender Dashboard, Beige Sidebar, and Floating Shapes
+# Custom Styling: Google Font (Plus Jakarta Sans), Soft Lavender Dashboard, Beige Sidebar, and Single Floating Blob
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    /* Apply modern font globally */
+    html, body, [class*="css"], .stApp, button, input, select, textarea {
+        font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    h1, h2, h3 {
+        font-weight: 700 !important;
+        letter-spacing: -0.02em;
+        color: #1f1b24;
+    }
+
     /* Main app background - soft lavender */
     .stApp {
         background-color: #f3eef8;
@@ -19,11 +32,11 @@ st.markdown("""
     /* Make sidebar navigation labels bigger and darker for contrast */
     [data-testid="stSidebar"] .stRadio label p {
         font-size: 1.15rem !important;
-        font-weight: 500 !important;
+        font-weight: 600 !important;
         color: #2b2b2b !important;
     }
     
-    /* Subtle floating fun shapes across the page */
+    /* Subtle floating organic shape */
     @keyframes floatSlow {
         0% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
         50% { transform: translateY(-15px) rotate(180deg); opacity: 0.8; }
@@ -34,31 +47,17 @@ st.markdown("""
         position: fixed;
         top: 80px;
         right: 40px;
-        width: 70px;
-        height: 70px;
-        background: rgba(205, 193, 225, 0.35);
+        width: 75px;
+        height: 75px;
+        background: rgba(205, 193, 225, 0.4);
         border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
         animation: floatSlow 10s infinite ease-in-out;
-        z-index: 1;
-        pointer-events: none;
-    }
-    
-    .floating-shape-2 {
-        position: fixed;
-        bottom: 60px;
-        left: 320px;
-        width: 90px;
-        height: 90px;
-        background: rgba(220, 210, 235, 0.3);
-        border-radius: 50%;
-        animation: floatSlow 14s infinite ease-in-out reverse;
         z-index: 1;
         pointer-events: none;
     }
     </style>
     
     <div class="floating-shape-1"></div>
-    <div class="floating-shape-2"></div>
 """, unsafe_allow_html=True)
 
 st.title("Smart Academic & Attendance Tracker")
