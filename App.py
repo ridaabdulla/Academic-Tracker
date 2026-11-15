@@ -104,4 +104,44 @@ elif menu == "Dashboard & Attendance":
                     st.warning("Low")
             
             # Progress bar
-            st.progress(min(pct / 100.0
+            st.progress(min(pct / 100.0, 1.0))
+            
+            # Attendance Skip / Required Calculation (Here is the skip part!)
+            target_pct = 75.0
+            if pct >= target_pct:
+                skippable = int((attended - (0.75 * total)) / 0.75)
+                if skippable > 0:
+                    st.info(f"You can safely skip up to **{skippable}** upcoming classes without dropping below 75%.")
+                else:
+                    st.write("You are right at the 75% edge. Do not skip any classes.")
+            else:
+                needed = int((3 * total - 4 * attended + 3) / 4)
+                st.warning(f"You need to attend the next **{needed}** classes consecutively to reach 75%.")
+            
+            st.markdown("---")
+
+elif menu == "Marks Predictor":
+    st.subheader("End-Sem Marks Predictor")
+    if not st.session_state.subjects:
+        st.info("No subjects found! Add your subjects first.")
+    else:
+        subject_list = list(st.session_state.subjects.keys())
+        selected_subject = st.selectbox("Select Subject", subject_list)
+        
+        internal = st.session_state.subjects[selected_subject]["internal"]
+        st.write(f"Current Internals for **{selected_subject}**: **{internal}/40**")
+        
+        target_total = st.number_input("Enter your Target Total Marks out of 100", min_value=0.0, max_value=100.0, value=80.0, step=1.0)
+        
+        if st.button("Calculate Required End-Sem Marks"):
+            required_end_sem = (target_total - internal) * 2
+            if required_end_sem <= 100:
+                st.success(f"To get {target_total}/100 total, you need at least **{required_end_sem:.1f}/100** in the End-Sem exam.")
+                if required_end_sem <= 40:
+                    st.info("Easy target! You're cruising.")
+                elif required_end_sem <= 70:
+                    st.warning("Moderate effort needed. Keep your notes ready.")
+                else:
+                    st.error("High target! Grind time for the finals.")
+            else:
+                st.error(f"Mathematical limit exceeded! Max possible total with current internals is {internal + 40:.1f}/100.")
