@@ -104,4 +104,4 @@ elif menu == "Dashboard & Attendance":
                     st.warning("Low")
             
             # Progress bar
-            st.progress(min(pct / 100.0, 1.0))
+            st.progress(min(pct / 100.0
