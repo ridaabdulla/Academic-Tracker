@@ -56,9 +56,22 @@ elif menu == "📊 Dashboard & Attendance":
                 else:
                     st.warning("Low")
             
-            # Progress bar
-            st.progress(min(pct / 100.0, 1.0))
-            st.markdown("---")
+            # Attendance Safety Check
+            target_pct = 75.0
+            if pct >= target_pct:
+                # Formula to calculate how many classes can be skipped while maintaining 75%
+                # attended - (0.75 * total) / 0.25 -> simplified: (attended - 0.75 * total) / 0.25 ... or safer calculation:
+                # Max classes you can miss: find max x such that (attended / (total + x)) >= 0.75 => attended >= 0.75*total + 0.75*x => x <= (attended - 0.75*total) / 0.75
+                skippable = int((attended - (0.75 * total)) / 0.75)
+                if skippable > 0:
+                    st.info(f"You can safely skip up to **{skippable}** upcoming classes without dropping below 75%.")
+                else:
+                    st.write("You are right at the 75% edge. Do not skip any classes.")
+            else:
+                # Classes needed to reach 75%
+                # (attended + x) / (total + x) = 0.75 => x = (3 * total - 4 * attended)
+                needed = int((3 * total - 4 * attended + 3) / 4)
+                st.warning(f"You need to attend the next **{needed}** classes consecutively to reach 75%.")
 
 elif menu == "🎯 Marks Predictor":
     st.subheader("End-Sem Marks Predictor")
