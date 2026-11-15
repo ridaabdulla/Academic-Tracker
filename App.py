@@ -2,14 +2,14 @@ import streamlit as st
 
 st.set_page_config(page_title="Smart Academic Tracker", layout="centered")
 
-# Custom Styling: Google Font (Plus Jakarta Sans), Soft Lavender Dashboard, Beige Sidebar, and Single Floating Blob
+# Custom Styling: Forcing Lavender background on mobile & desktop
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-    /* Apply modern font globally */
-    html, body, [class*="css"], .stApp, button, input, select, textarea {
+    html, body, [class*="css"], .stApp {
         font-family: 'Plus Jakarta Sans', sans-serif !important;
+        background-color: #f3eef8 !important;
     }
 
     h1, h2, h3 {
@@ -17,47 +17,19 @@ st.markdown("""
         letter-spacing: -0.02em;
         color: #1f1b24;
     }
-
-    /* Main app background - soft lavender */
-    .stApp {
-        background-color: #f3eef8;
-    }
     
     /* Sidebar background - warm beige */
     [data-testid="stSidebar"] {
-        background-color: #f5f2eb;
-        color: #2b2b2b;
+        background-color: #f5f2eb !important;
+        color: #2b2b2b !important;
     }
     
-    /* Make sidebar navigation labels bigger and darker for contrast */
     [data-testid="stSidebar"] .stRadio label p {
         font-size: 1.15rem !important;
         font-weight: 600 !important;
         color: #2b2b2b !important;
     }
-    
-    /* Subtle floating organic shape */
-    @keyframes floatSlow {
-        0% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
-        50% { transform: translateY(-15px) rotate(180deg); opacity: 0.8; }
-        100% { transform: translateY(0px) rotate(360deg); opacity: 0.5; }
-    }
-    
-    .floating-shape-1 {
-        position: fixed;
-        top: 80px;
-        right: 40px;
-        width: 75px;
-        height: 75px;
-        background: rgba(205, 193, 225, 0.4);
-        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        animation: floatSlow 10s infinite ease-in-out;
-        z-index: 1;
-        pointer-events: none;
-    }
     </style>
-    
-    <div class="floating-shape-1"></div>
 """, unsafe_allow_html=True)
 
 st.title("Smart Academic & Attendance Tracker")
