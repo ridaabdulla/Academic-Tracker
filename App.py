@@ -1,39 +1,88 @@
 import streamlit as st
 
-# Page configuration
-st.set_page_config(
-    page_title="Academic Tracker",
-    page_icon="📚",
-    layout="centered"
-)
+st.set_page_config(page_title="Smart Academic Tracker", page_icon="🎓", layout="centered")
 
-# Minimal Aesthetic Styling
-st.markdown("""
-    <style>
-    .main {
-        background-color: #fafafa;
-    }
-    h1 {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        font-weight: 500;
-        color: #111111;
-        letter-spacing: -0.5px;
-    }
-    .stTextInput > div > div > input {
-        border-radius: 6px;
-        border: 1px solid #e0e0e0;
-    }
-    </style>
-""", unsafe_allow_html=True)
+st.title("Smart Academic & Attendance Tracker")
+st.write("Manage your semester attendance, track internal marks, and calculate your target finals score easily.")
 
-# App Content
-st.title("Academic Tracker")
-st.write("A clean and minimal space to manage your coursework and daily progress.")
+# Initialize session state so data persists when clicking around
+if "subjects" not in st.session_state:
+    st.session_state.subjects = {}
 
-# Simple input section
-task_name = st.text_input("Add a new task")
-if st.button("Save Task"):
-    if task_name:
-        st.success(f"Task added: {task_name}")
+# Sidebar navigation
+menu = st.sidebar.radio("Navigation", ["📊 Dashboard & Attendance", "➕ Add / Update Subject", "🎯 Marks Predictor"])
+
+if menu == "➕ Add / Update Subject":
+    st.subheader("Add or Update a Subject")
+    with st.form("subject_form"):
+        name = st.text_input("Subject Name (e.g., Data Structures)").strip()
+        total = st.number_input("Total classes conducted so far", min_value=0, value=10, step=1)
+        attended = st.number_input("Total classes you attended", min_value=0, value=8, step=1)
+        internal = st.number_input("Current internal marks (out of 50)", min_value=0.0, max_value=50.0, value=35.0, step=0.5)
+        
+        submitted = st.form_submit_button("Save Subject")
+        if submitted:
+            if not name:
+                st.error("Subject name cannot be empty!")
+            elif attended > total:
+                st.error("Attended classes cannot exceed total classes!")
+            else:
+                st.session_state.subjects[name] = {
+                    "total": total,
+                    "attended": attended,
+                    "internal": internal
+                }
+                st.success(f"Successfully saved {name}!")
+
+elif menu == "📊 Dashboard & Attendance":
+    st.subheader("Your Semester Dashboard")
+    if not st.session_state.subjects:
+        st.info("No subjects added yet! Go to 'Add / Update Subject' in the sidebar to start.")
     else:
-        st.warning("Please enter a task name.")
+        for name, data in st.session_state.subjects.items():
+            total = data["total"]
+            attended = data["attended"]
+            pct = (attended / total * 100) if total > 0 else 0
+            
+            col1, col2, col3 = st.columns([2, 2, 1])
+            with col1:
+                st.markdown(f"**{name}**")
+                st.write(f"Attended: {attended}/{total}")
+            with col2:
+                st.metric("Attendance", f"{pct:.1f}%")
+            with col3:
+                if pct >= 75:
+                    st.success("Safe ")
+                else:
+                    st.warning("Low ")
+            
+            # Progress bar
+            st.progress(min(pct / 100.0, 1.0))
+            st.markdown("---")
+
+elif menu == "🎯 Marks Predictor":
+    st.subheader("End-Sem Marks Predictor")
+    if not st.session_state.subjects:
+        st.info("No subjects found! Add your subjects first.")
+    else:
+        subject_list = list(st.session_state.subjects.keys())
+        selected_subject = st.selectbox("Select Subject", subject_list)
+        
+        internal = st.session_state.subjects[selected_subject]["internal"]
+        st.write(f"Current Internals for **{selected_subject}**: **{internal}/50**")
+        
+        target_total = st.number_input("Enter your Target Total Marks out of 100", min_value=0.0, max_value=100.0, value=80.0, step=1.0)
+        
+        if st.button("Calculate Required End-Sem Marks"):
+            # Formula: Total = Internal + (EndSem / 2) -> Required EndSem = (Target - Internal) * 2
+            required_end_sem = (target_total - internal) * 2
+            if required_end_sem <= 100:
+                st.success(f"To get {target_total}/100 total, you need at least **{required_end_sem:.1f}/100** in the End-Sem exam.")
+                if required_end_sem <= 40:
+                    st.info("Easy target! You're cruising.")
+                elif required_end_sem <= 70:
+                    st.warning(" Moderate effort needed. Keep your notes ready.")
+                else:
+                    st.error("High target! Grind time for the finals.")
+            else:
+                st.error(f" Mathematical limit exceeded! Max possible total with current internals is {internal + 50:.1f}/100.")
