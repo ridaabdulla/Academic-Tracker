@@ -1,45 +1,67 @@
 import streamlit as st
 
-st.set_page_config(page_title="Smart Academic Tracker", page_icon="🎓", layout="centered")
+st.set_page_config(page_title="Smart Academic Tracker", layout="centered")
 
-# Custom Styling for Larger Purple Sidebar & Subtle Animated Shape
+# Custom Styling: Soft Lavender Dashboard, Beige Sidebar, and Floating Shapes
 st.markdown("""
     <style>
-    /* Sidebar purple gradient background */
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #4c1d95 0%, #6d28d9 100%);
-        color: #ffffff;
+    /* Main app background - soft lavender */
+    .stApp {
+        background-color: #f3eef8;
     }
     
-    /* Make sidebar navigation radio options bigger and clearer */
+    /* Sidebar background - warm beige */
+    [data-testid="stSidebar"] {
+        background-color: #f5f2eb;
+        color: #2b2b2b;
+    }
+    
+    /* Make sidebar navigation labels bigger and darker for contrast */
     [data-testid="stSidebar"] .stRadio label p {
         font-size: 1.15rem !important;
         font-weight: 500 !important;
-        color: #f3f4f6 !important;
+        color: #2b2b2b !important;
     }
     
-    /* Subtle animated background shape inside the sidebar */
-    @keyframes floatShape {
-        0% { transform: translateY(0px) scale(1); opacity: 0.4; }
-        50% { transform: translateY(15px) scale(1.05); opacity: 0.7; }
-        100% { transform: translateY(0px) scale(1); opacity: 0.4; }
+    /* Subtle floating fun shapes across the page */
+    @keyframes floatSlow {
+        0% { transform: translateY(0px) rotate(0deg); opacity: 0.5; }
+        50% { transform: translateY(-15px) rotate(180deg); opacity: 0.8; }
+        100% { transform: translateY(0px) rotate(360deg); opacity: 0.5; }
     }
-    [data-testid="stSidebar"]::before {
-        content: "";
-        position: absolute;
-        bottom: 20px;
-        right: -20px;
-        width: 140px;
-        height: 140px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
-        animation: floatShape 8s infinite ease-in-out;
+    
+    .floating-shape-1 {
+        position: fixed;
+        top: 80px;
+        right: 40px;
+        width: 70px;
+        height: 70px;
+        background: rgba(205, 193, 225, 0.35);
+        border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+        animation: floatSlow 10s infinite ease-in-out;
+        z-index: 1;
+        pointer-events: none;
+    }
+    
+    .floating-shape-2 {
+        position: fixed;
+        bottom: 60px;
+        left: 320px;
+        width: 90px;
+        height: 90px;
+        background: rgba(220, 210, 235, 0.3);
+        border-radius: 50%;
+        animation: floatSlow 14s infinite ease-in-out reverse;
+        z-index: 1;
         pointer-events: none;
     }
     </style>
+    
+    <div class="floating-shape-1"></div>
+    <div class="floating-shape-2"></div>
 """, unsafe_allow_html=True)
 
-st.title("🎓 Smart Academic & Attendance Tracker")
+st.title("Smart Academic & Attendance Tracker")
 st.write("Manage your semester attendance, track internal marks, and calculate your target finals score easily.")
 
 # Initialize session state so data persists when clicking around
@@ -47,9 +69,9 @@ if "subjects" not in st.session_state:
     st.session_state.subjects = {}
 
 # Sidebar navigation
-menu = st.sidebar.radio("Navigation", ["📊 Dashboard & Attendance", "➕ Add / Update Subject", "🎯 Marks Predictor"])
+menu = st.sidebar.radio("Navigation", ["Dashboard & Attendance", "Add / Update Subject", "Marks Predictor"])
 
-if menu == "➕ Add / Update Subject":
+if menu == "Add / Update Subject":
     st.subheader("Add or Update a Subject")
     with st.form("subject_form"):
         name = st.text_input("Subject Name (e.g., Data Structures)").strip()
@@ -71,7 +93,7 @@ if menu == "➕ Add / Update Subject":
                 }
                 st.success(f"Successfully saved {name}!")
 
-elif menu == "📊 Dashboard & Attendance":
+elif menu == "Dashboard & Attendance":
     st.subheader("Your Semester Dashboard")
     if not st.session_state.subjects:
         st.info("No subjects added yet! Go to 'Add / Update Subject' in the sidebar to start.")
@@ -89,9 +111,9 @@ elif menu == "📊 Dashboard & Attendance":
                 st.metric("Attendance", f"{pct:.1f}%")
             with col3:
                 if pct >= 75:
-                    st.success("Safe ")
+                    st.success("Safe")
                 else:
-                    st.warning("Low ")
+                    st.warning("Low")
             
             # Progress bar
             st.progress(min(pct / 100.0, 1.0))
@@ -110,7 +132,7 @@ elif menu == "📊 Dashboard & Attendance":
             
             st.markdown("---")
 
-elif menu == "🎯 Marks Predictor":
+elif menu == "Marks Predictor":
     st.subheader("End-Sem Marks Predictor")
     if not st.session_state.subjects:
         st.info("No subjects found! Add your subjects first.")
@@ -132,6 +154,6 @@ elif menu == "🎯 Marks Predictor":
                 elif required_end_sem <= 70:
                     st.warning("Moderate effort needed. Keep your notes ready.")
                 else:
-                    st.error(" High target! Grind time for the finals.")
+                    st.error("High target! Grind time for the finals.")
             else:
-                st.error(f"❌ Mathematical limit exceeded! Max possible total with current internals is {internal + 40:.1f}/100.")
+                st.error(f"Mathematical limit exceeded! Max possible total with current internals is {internal + 40:.1f}/100.")
